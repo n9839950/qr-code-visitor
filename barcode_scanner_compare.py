@@ -4,6 +4,7 @@
 import firebase_admin 
 from firebase_admin import credentials
 from firebase_admin import firestore
+import RPi.GPIO as GPIO
 
 from imutils.video import VideoStream
 from pyzbar import pyzbar
@@ -12,6 +13,12 @@ import datetime
 import imutils
 import time 
 import cv2
+
+# GPIO pins
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(26,GPIO.OUT)
+
 
 
 #firestore credentials
@@ -70,8 +77,8 @@ while True:
          #printing barcode data 
         if barcodeData > str(0):
             #print(barcodeData)
-            print(barcodeData)
-            time.sleep(5.0)
+            print(" This is scanned barcode "+ barcodeData)
+            
             
            
            
@@ -83,16 +90,26 @@ while True:
             csv.flush()
             found.add(barcodeData)
         
-       
-        #qrcode_ref=db.collection(u'qrcode').stream()
         
-        try: 
-            print('in the loop')
-            doc = doc_ref.get()
-            print(u'Document data: {}'.format(doc.to_dict()))
-        except google.cloud.exceptions.NotFound:
-            print(u'No such document!')  
+        
+        # Comparing the data from database
+        docs = db.collection(u'qrcode').stream()
 
+        for doc in docs:
+            print(u"Barcode in database: {}".format(doc.to_dict()[u'barcodeData']))
+     
+     
+            if barcodeData == format(doc.to_dict()[u'barcodeData']):
+                GPIO.output(26,GPIO.HIGH)
+            #print( " the data after verification "+format(doc.to_dict()[u'barcodeData']))
+                time.sleep(1)
+                GPIO.output(26,GPIO.LOW)
+                print("Match Found")
+                break
+            elif():
+                GPIO.output(26,GPIO.LOW)
+                print("No data found")
+                    
 
     # show the output frame
     cv2.imshow("Barcode Scanner", frame)

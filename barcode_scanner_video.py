@@ -76,7 +76,7 @@ while True:
             #print(barcodeData)
             print(barcodeData + " barcode successfully scanned, Thank you!")
             
-            time.sleep(5.0)
+            
             
            
            
@@ -89,7 +89,7 @@ while True:
             found.add(barcodeData)
         
         data = {u'barcodeData' :barcodeData,
-                u'init_time': datetime.datetime.now()
+                #u'init_time': datetime.datetime.now()
                     
             }
         print('Writing to database')
